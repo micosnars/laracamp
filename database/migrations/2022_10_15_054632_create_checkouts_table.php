@@ -21,6 +21,7 @@ class CreateCheckoutsTable extends Migration
             $table->date('expired');
             $table->string('cvc', 3);
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
