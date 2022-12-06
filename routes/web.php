@@ -36,12 +36,12 @@ Route::get('auth/google/callback', [UserController::class, 'handleProviderCallba
 Route::middleware('auth')->group(function () {
     //dashboard
     Route::get('dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
+    Route::get('dashboard/checkout/invoice/{checkout}', [CheckoutController::class, 'invoice'])->name('user.checkout.invoice');
 
     //checkout
     Route::get('checkout/succes', [CheckoutController::class, 'success'])->name('checkout.success');
     Route::get('checkout/{camp:slug}', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('checkout/{camp}', [CheckoutController::class, 'store'])->name('checkout.store');
-
 });
 
 require __DIR__.'/auth.php';
