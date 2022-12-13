@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class AfterCheckout extends Mailable
+class Paid extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -30,10 +30,12 @@ class AfterCheckout extends Mailable
      */
     public function build()
     {
-        return $this->subject("Register Camp: {$this->checkout->Camp->title}")->markdown('emails.checkout.afterCheckout', [
+        return $this->subject('Your Transaction Has Been Confirmed')->markdown('emails.checkout.paid', [
             'checkout' => $this->checkout
         ]);
     }
+
+
 
     // /**
     //  * Get the message envelope.
@@ -43,7 +45,7 @@ class AfterCheckout extends Mailable
     // public function envelope()
     // {
     //     return new Envelope(
-    //         subject: 'After Checkout',
+    //         subject: 'Paid',
     //     );
     // }
 
@@ -55,7 +57,7 @@ class AfterCheckout extends Mailable
     // public function content()
     // {
     //     return new Content(
-    //         markdown: 'emails.checkout.afterCheckout',
+    //         markdown: 'emails.checkout.paid',
     //     );
     // }
 
