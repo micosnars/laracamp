@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class CreateCampBenefitsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,10 +15,17 @@ return new class extends Migration
     {
         Schema::create('camp_benefits', function (Blueprint $table) {
             $table->id();
-            $table->bigInteger('camp_id')->unsigned();
+            // 1st method
+            // $table->bigInteger('camp_id')->unsigned();
+            // $table->unsignedBigInteger('camp_id');
+
+            // 2nd method
+            $table->foreignId('camp_id')->constrained();
             $table->string('name');
             $table->timestamps();
-            $table->foreign('camp_id')->references('id')->on('camps')->onDelete('cascade');
+
+            // 1st method
+            // $table->foreign('camp_id')->references('id')->on('camps')->onDelete('cascade');
         });
     }
 
@@ -31,4 +38,4 @@ return new class extends Migration
     {
         Schema::dropIfExists('camp_benefits');
     }
-};
+}

@@ -7,19 +7,22 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Auth;
 use Mail;
-Use App\Mail\User\AfterRegister;
+use App\Mail\User\AfterRegister;
 
 class UserController extends Controller
 {
-    public function login() {
+    public function login()
+    {
         return view('auth.user.login');
     }
 
-    public function google() {
+    public function google()
+    {
         return Socialite::driver('google')->redirect();
     }
 
-    public function handleProviderCallback() {
+    public function handleProviderCallback()
+    {
         $callback = Socialite::driver('google')->stateless()->user();
         $data = [
             'name' => $callback->getName(),

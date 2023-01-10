@@ -1,8 +1,7 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\User\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\User\DashboardController as UserDashboard;
@@ -24,10 +23,6 @@ Route::get('/', function () {
     return view('welcome');
 })->name('welcome');
 
-// Route::get('checkout/{camp:slug}', function () {
-//     return view('checkout');
-// })->name('checkout');
-
 // socialite routes
 Route::get('sign-in-google', [UserController::class, 'google'])->name('user.login.google');
 Route::get('auth/google/callback', [UserController::class, 'handleProviderCallback'])->name('user.google.callback');
@@ -36,21 +31,17 @@ Route::get('auth/google/callback', [UserController::class, 'handleProviderCallba
 Route::get('payment/success', [CheckoutController::class, 'midtransCallback']);
 Route::post('payment/success', [CheckoutController::class, 'midtransCallback']);
 
-// Route::get('/dashboard', function () {
-//     return view('dashboard');
-// })->middleware(['auth', 'verified'])->name('dashboard');
+Route::middleware(['auth'])->group(function () {
+    // checkout routes
+    Route::get('checkout/success', [CheckoutController::class, 'success'])->name('checkout.success')->middleware('ensureUserRole:user');
+    Route::get('checkout/{camp:slug}', [CheckoutController::class, 'create'])->name('checkout.create')->middleware('ensureUserRole:user');
+    Route::post('checkout/{camp}', [CheckoutController::class, 'store'])->name('checkout.store')->middleware('ensureUserRole:user');
 
-Route::middleware('auth')->group(function () {
-    //dashboard
+    // dashboard
     Route::get('dashboard', [HomeController::class, 'dashboard'])->name('dashboard');
-
-    //checkout
-    Route::get('checkout/succes', [CheckoutController::class, 'success'])->name('checkout.success');
-    Route::get('checkout/{camp:slug}', [CheckoutController::class, 'create'])->name('checkout.create');
-    Route::post('checkout/{camp}', [CheckoutController::class, 'store'])->name('checkout.store');
-
-     // user dashboard
-     Route::prefix('user/dashboard')->namespace('User')->name('user.')->middleware('ensureUserRole:user')->group(function(){
+    
+    // user dashboard
+    Route::prefix('user/dashboard')->namespace('User')->name('user.')->middleware('ensureUserRole:user')->group(function(){
         Route::get('/', [UserDashboard::class, 'index'])->name('dashboard');
     });
 
@@ -61,6 +52,11 @@ Route::middleware('auth')->group(function () {
         // admin checkout
         Route::post('checkout/{checkout}', [AdminCheckout::class, 'update'])->name('checkout.update');
     });
+
 });
+
+// Route::get('/dashboard', function () {
+//     return view('dashboard');
+// })->middleware(['auth'])->name('dashboard');
 
 require __DIR__.'/auth.php';

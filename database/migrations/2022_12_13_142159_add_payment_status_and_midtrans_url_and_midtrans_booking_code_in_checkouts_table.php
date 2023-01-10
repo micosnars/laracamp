@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-return new class extends Migration
+class AddPaymentStatusAndMidtransUrlAndMidtransBookingCodeInCheckoutsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -15,8 +15,8 @@ return new class extends Migration
     {
         Schema::table('checkouts', function (Blueprint $table) {
             $table->string('payment_status', 100)->default('waiting')->after('camp_id');
-            $table->string('midtrans_url', 100)->nullable()->after('payment_status');
-            $table->string('midtrans_booking_code', 100)->nullable()->after('midtrans_url');
+            $table->string('midtrans_url')->nullable()->after('payment_status');
+            $table->string('midtrans_booking_code')->nullable()->after('midtrans_url');
         });
     }
 
@@ -31,4 +31,4 @@ return new class extends Migration
             $table->dropColumn(['payment_status', 'midtrans_url', 'midtrans_booking_code']);
         });
     }
-};
+}

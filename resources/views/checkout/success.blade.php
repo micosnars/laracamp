@@ -1,8 +1,7 @@
 @extends('layouts.app')
 
 @section('content')
-
-<section class="checkout">
+    <section class="checkout">
         <div class="container">
             <div class="row text-center">
                 <div class="col-lg-12 col-12">
@@ -15,6 +14,9 @@
                     <h2 class="primary-header ">
                         Berhasil Checkout
                     </h2>
+                    <p>
+                        Silahkan menuju halaman Dashboard dan lakukan pembayaran
+                    </p>
                     <a href="{{route('dashboard')}}" class="btn btn-primary mt-3">
                         My Dashboard
                     </a>

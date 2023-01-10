@@ -5,10 +5,9 @@ namespace App\Http\Controllers\User;
 use App\Http\Controllers\Controller;
 use App\Models\Checkout;
 use Illuminate\Http\Request;
-use App\Models\Camp;
-use App\Models\User;
 use App\Http\Requests\User\Checkout\Store;
 use App\Mail\Checkout\AfterCheckout;
+use App\Models\Camp;
 use Auth;
 use Mail;
 use Str;
@@ -16,6 +15,7 @@ use Midtrans;
 
 class CheckoutController extends Controller
 {
+
     public function __construct()
     {
         Midtrans\Config::$serverKey = env('MIDTRANS_SERVERKEY');
@@ -23,6 +23,7 @@ class CheckoutController extends Controller
         Midtrans\Config::$isSanitized = env('MIDTRANS_IS_SANITIZED');
         Midtrans\Config::$is3ds = env('MIDTRANS_IS_3DS');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -42,10 +43,11 @@ class CheckoutController extends Controller
     {
         if ($camp->isRegistered) {
             $request->session()->flash('error', "You already registered on {$camp->title} camp.");
-            return redirect(route('dashboard'));
+            return redirect(route('user.dashboard'));
         }
         return view('checkout.create', [
-            'camp' => $camp]);
+            'camp' => $camp
+        ]);
     }
 
     /**
@@ -56,23 +58,25 @@ class CheckoutController extends Controller
      */
     public function store(Store $request, Camp $camp)
     {
-        //mapping request data
+        // mapping request data
         $data = $request->all();
         $data['user_id'] = Auth::id();
         $data['camp_id'] = $camp->id;
 
-        //update user data
+        // update user data
         $user = Auth::user();
         $user->email = $data['email'];
         $user->name = $data['name'];
         $user->occupation = $data['occupation'];
+        $user->phone = $data['phone'];
+        $user->address = $data['address'];
         $user->save();
 
-        //create checkout
+        // create checkout
         $checkout = Checkout::create($data);
         $this->getSnapRedirect($checkout);
 
-        //sending email
+        // sending email
         Mail::to(Auth::user()->email)->send(new AfterCheckout($checkout));
 
         return redirect(route('checkout.success'));
@@ -127,17 +131,15 @@ class CheckoutController extends Controller
     {
         return view('checkout.success');
     }
-    
-    public function inovice(Checkout $checkout)
-    {
-        return $checkout;
-    }
 
-    // Midtrans Handler
+    /**
+     * Midtrans Handler
+     */
     public function getSnapRedirect(Checkout $checkout)
     {
         $orderId = $checkout->id.'-'.Str::random(5);
         $price = $checkout->Camp->price * 1000;
+
         $checkout->midtrans_booking_code = $orderId;
 
         $transaction_details = [
@@ -145,11 +147,11 @@ class CheckoutController extends Controller
             'gross_amount' => $price
         ];
 
-        $item_details = [
+        $item_details[] = [
             'id' => $orderId,
             'price' => $price,
             'quantity' => 1,
-            'name' => "Payment for Checkout {$checkout->Camp->title} Camp"
+            'name' => "Payment for {$checkout->Camp->title} Camp"
         ];
 
         $userData = [
